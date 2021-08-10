@@ -1,0 +1,22 @@
+.selected {
+    font-weight: 900;
+    color: red;
+}
+span{
+    cursor: pointer;
+}
+.isFetching {
+    color: red;
+}
+.pageLinks {
+    display: flex;
+    flex-wrap: wrap;
+}
+.imgSize {
+    width: 75px;
+    height: 75px;
+}
+.statusContainer {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}

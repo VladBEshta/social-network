@@ -1,0 +1,29 @@
+.selected {
+    font-weight: 900;
+    color: red;
+}
+span{
+    cursor: pointer;
+}
+.isFetching {
+    color: red;
+}
+.pageLinks {
+    display: flex;
+    flex-wrap: wrap;
+}
+.imgSize {
+    width: 75px;
+    height: 75px;
+}
+.paginator {
+    margin: 10px;
+}
+.pageNumber {
+    padding: 2px;
+    border: 1px solid gray;
+}
+.pageNumber.selectedPage {
+    font-weight: bold;
+    border-color: black;
+}
