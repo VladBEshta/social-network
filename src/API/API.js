@@ -29,12 +29,19 @@ export const getUserStatus = (userId) => {
     return instanceAxios.get(`profile/status/${userId}`).then(response => response.data)
 }
 export const updateUserStatus = (status) => {
-    return instanceAxios.put ('profile/status', {status}).then(response => response.data)
+    return instanceAxios.put('profile/status', {status}).then(response => response.data)
 }
-export const login = (email, password, rememberMe) => {
-    return instanceAxios.post (`auth/login`, {email, password, rememberMe}).then(response => (response.data))
+export const login = (email, password, rememberMe, captcha) => {
+    return instanceAxios.post(`auth/login`, {email, password, rememberMe, captcha}).then(response => (response.data))
 }
 export const logout = () => {
-    return instanceAxios.delete (`auth/login`).then(response => response.data)
+    return instanceAxios.delete(`auth/login`).then(response => response.data)
 }
+export const savePhoto = (photo) => {
+    const formData = new FormData()
+    formData.append('image', photo)
+    return instanceAxios.put(`profile/photo`, formData).then(response => response.data)
+}
+export const apiGetCaptcha = () => instanceAxios.get(`security/get-captcha-url`)
+
 

@@ -1,5 +1,5 @@
 import React from "react";
-import {Formik, Form} from 'formik'
+import {Form, Formik} from 'formik'
 import * as Yup from 'yup'
 import FormikControl from "../Formik/FormikControl";
 import {connect} from "react-redux";
@@ -9,7 +9,8 @@ import {Redirect} from "react-router-dom";
 const mapStateToProps = state => {
     return {
         isAuth: state.auth.isAuth,
-        serverError: state.auth.serverError
+        serverError: state.auth.serverError,
+        captchaUrl: state.auth.captchaUrl
     }
 }
 
@@ -17,10 +18,11 @@ const Login = (props) => {
     const initialValues = {
         email: '',
         password: '',
-        rememberMe: false
+        rememberMe: false,
+        captcha: ''
     }
     const onSubmit = values => {
-        props.loginTC(values.email, values.password, values.rememberMe)
+        props.loginTC(values.email, values.password, values.rememberMe, values.captcha)
     }
 
     const validationSchema = Yup.object({
@@ -33,7 +35,9 @@ const Login = (props) => {
     return (
         <div>
             <h1>Login</h1>
-            <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
+            <Formik initialValues={initialValues}
+                    validationSchema={validationSchema}
+                    onSubmit={onSubmit}>
                 {formik => (
                     <Form>
                         <FormikControl
@@ -51,6 +55,12 @@ const Login = (props) => {
                             type='checkbox'
                             label='Remember me'
                             name='rememberMe'/>
+                        {props.captchaUrl && <img src={props.captchaUrl} alt="captcha"/>}
+                        {props.captchaUrl && <FormikControl
+                            control='input'
+                            type='captcha'
+                            label='Pls enter captcha from image'
+                            name='captcha'/>}
                         <button type='submit'>Login</button>
                     </Form>)}
             </Formik>

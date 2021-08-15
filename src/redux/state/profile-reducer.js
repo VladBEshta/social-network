@@ -1,4 +1,4 @@
-import {getProfile, getUserStatus, updateUserStatus,} from "../../API/API";
+import {getProfile, getUserStatus, savePhoto, updateUserStatus,} from "../../API/API";
 
 let initialState = {
     posts: [
@@ -28,6 +28,12 @@ const profileReducer = (state = initialState, action) => {
                 status: action.status
             }
         }
+        case 'SAVE-PHOTO-SUCCESS': {
+            return {
+                ...state,
+                profile: {photos: action.photos}
+            }
+        }
         default:
             return state
     }
@@ -35,6 +41,8 @@ const profileReducer = (state = initialState, action) => {
 export const addPostAction = (newPostText) => ({type: "ADD-POST", newPostText})
 export const setUserProfile = (profile) => ({type: 'SET-USER-PROFILE', profile})
 export const setUserStatus = (status) => ({type: 'SET-USER-STATUS', status})
+export const savePhotoSuccess = (photos) => ({type: 'SAVE-PHOTO-SUCCESS', photos})
+
 export default profileReducer
 export const getProfileDataThunk = (userId) => {
     return (dispatch) => {
@@ -46,11 +54,16 @@ export const getProfileStatusThunk = (userId) => {
         getUserStatus(userId).then(data => dispatch(setUserStatus(data)))
     }
 }
-export const updateProfileStatusThunk = (status) => {
-    return (dispatch) => {
-        updateUserStatus(status).then(data => {
-                if (data.resultСode === 0) dispatch(setUserStatus(status))
-            }
-        )
+export const updateProfileStatusThunk = status => async dispatch => {
+    const data = await updateUserStatus(status)
+
+    if (data.resultСode === 0) {
+        dispatch(setUserStatus(status))
+    }
+}
+export const saveAva = photo => async dispatch => {
+    const data = await savePhoto(photo)
+    if (data.resultCode === 0) {
+        dispatch(savePhotoSuccess(data.data.photos))
     }
 }

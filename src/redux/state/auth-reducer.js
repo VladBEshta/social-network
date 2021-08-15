@@ -1,10 +1,11 @@
-import {getAuthMe, login, logout} from "../../API/API";
+import {apiGetCaptcha, getAuthMe, login, logout} from "../../API/API";
 
 let initialState = {
     id: null,
     login: null,
     email: null,
     isAuth: false,
+    captchaUrl: null
 }
 
 const authReducer = (state = initialState, action) => {
@@ -14,39 +15,45 @@ const authReducer = (state = initialState, action) => {
                 ...state,
                 ...action.data
             }
+        case "SET-CAPTCHA-URL":
+            return {
+                ...state,
+                ...action.data
+            }
         default:
             return state
     }
 }
-export const getAuthMeThunk = () => (dispatch) => {
-    return getAuthMe()
-        .then(data => {
-            if (data.resultCode === 0) {
-                let {id, login, email} = data.data
-                dispatch(setAuthData(id, login, email, true))
-            }
-        })
+export const getAuthMeThunk = () => async (dispatch) => {
+    const data = await getAuthMe()
+
+    if (data.resultCode === 0) {
+        let {id, login, email} = data.data
+        dispatch(setAuthData(id, login, email, true))
+    }
+
 }
-export const loginTC = (email, password, rememberMe) => (dispatch) => {
-    login(email, password, rememberMe)
-        .then(data => {
-            if (data.resultCode === 0) {
-                console.log(data)
-                dispatch(getAuthMeThunk())
-            }else {
-                alert(data.messages[0])
-            }
-        })
+export const loginTC = (email, password, rememberMe, captchaUrl) => async (dispatch) => {
+    const data = await login(email, password, rememberMe, captchaUrl)
+
+    if (data.resultCode === 0) {
+        dispatch(getAuthMeThunk())
+    } else if(data.resultCode === 10) {
+        dispatch(getCaptcha())
+    }
 }
-export const logoutTC = () => {
-    return (dispatch) => {
-        logout().then(data => {
-            if (data.resultCode === 0) {
-                dispatch(setAuthData(null, null, null, false))
-            }
-        })
+export const logoutTC = () => async (dispatch) => {
+    const data = await logout()
+    if (data.resultCode === 0) {
+        dispatch(setAuthData(null, null, null, false))
     }
 }
 
+export const getCaptcha = () => async (dispatch) => {
+    const response =  await apiGetCaptcha()
+    const captchaUrl = response.data.url
+    dispatch(setCaptchaUrl(captchaUrl))
+}
 export const setAuthData = (id, login, email, isAuth) => ({type: 'SET-AUTH-DATA', data: {id, login, email, isAuth}})
+export const setCaptchaUrl = (captchaUrl) => ({type: 'SET-CAPTCHA-URL', data: {captchaUrl}})
 export default authReducer;
